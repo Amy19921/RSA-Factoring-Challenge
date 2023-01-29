@@ -1,48 +1,37 @@
-#!/usr/bin/env bash
+#!/usr/bin/python3
+from sys import argv
+import math
+""" factorize large number to a product of 2 small numbers"""
 
-check_factor()
-{
-	if [ $# -ne 3 ];
-        then
-                args=("$@")
-                count=0
-                num2=1
-                for a in ${args[*]};
-                do
-                        if [ $count -gt 1 ];
-                        then
-                                num2=$(echo $a*$num2 | bc)
-                        fi
-                        count=$((count + 1))
-                done
-        else
-                num2=$3
-        fi
 
-        num1=$2
-        num=$(echo "$1" | tr ':' '=')
+def factorial(num):
+    """gets factors of num
+    Args: num (int): number"""
+    if num % 2 == 0:
+        i = 2
+        print("{}={}*{}".format(num, int(num//i), i))
+    else:
+        sq_rt = int(math.sqrt(num)) + 1
+        for i in range(3, sq_rt, 2):
+            if num % i == 0:
+                print("{}={}*{}".format(num, int(num//i), i))
+                return
+            if num % (sq_rt + i) == 0:
+                print("{}={}*{}".format(num, sq_rt + i, int(num//(sq_rt + i))))
+                return
+            if num % (sq_rt - i) == 0:
+                print("{}={}*{}".format(num, sq_rt - i, int(num//(sq_rt - i))))
+                return
 
-        result=$(echo "if($num2 > $num1) 1 else 0" | bc)
-	        if ((result == 1)); then
-		        numcp=$num1
-		        num1=$num2
-		        num2=$numcp
-                fi
 
-        echo "$num$num1*$num2"
-}
+def factors(fname):
+    """ opens, reads and prints factors in file"""
 
-if [ $# -ne 1 ]
-then
-        echo 'Usage: factors <file>'
-        exit 1
-else
+    with open(fname) as f:
+        for i in f.readlines():
+            nm = int(i)
+            result = factorial(nm)
 
-        while read i
-        do
 
-                result=$(factor "$i")
-                check_factor $result
-
-        done < "$1"
-fi
+if __name__ == "__main__":
+    factors(argv[1])
